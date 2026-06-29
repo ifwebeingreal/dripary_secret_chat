@@ -44,8 +44,8 @@ async def get_random_top_user_this_week(top_limit: int = 5):
             )
             .join(UserTask, UserTask.tg_id == User.tg_id)
             .join(Task, Task.id == UserTask.task_id)
-            .where(UserTask.date >= start_of_week)
-            .where(UserTask.date < end_of_week)
+            .where(UserTask.created_at >= start_of_week)
+            .where(UserTask.created_at < end_of_week)
             .group_by(User.tg_id, User.first_name)
             .order_by(func.sum(Task.points_count).desc())
             .limit(top_limit)
@@ -75,13 +75,13 @@ async def get_top_users(period: str = "all", limit: int = 10):
 
         if period == "day":
             start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            query = query.where(UserTask.date >= start)
+            query = query.where(UserTask.created_at >= start)
 
         elif period == "week":
             start_of_week = (now - timedelta(days=now.weekday())).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
-            query = query.where(UserTask.date >= start_of_week)
+            query = query.where(UserTask.created_at >= start_of_week)
 
         elif period == "all":
             pass
