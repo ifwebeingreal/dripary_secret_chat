@@ -24,11 +24,11 @@ class User(Base):
 
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
-    first_name: Mapped[str]
-    date: Mapped[str]
+    first_name: Mapped[str] = mapped_column(String)
     balance: Mapped[int] = mapped_column(default=0)
-    rank_name: Mapped[str]
+    rank_name: Mapped[str] = mapped_column(String)
     game_points: Mapped[int] = mapped_column(default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
 
 class Admin(Base):
@@ -43,7 +43,7 @@ class Outfit(Base):
 
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
-    file_id: Mapped[str]
+    file_id: Mapped[str] = mapped_column(String)
     likes: Mapped[int] = mapped_column(default=0)
     dislikes: Mapped[int] = mapped_column(default=0)
     message_id: Mapped[int]
@@ -80,7 +80,7 @@ class UserTask(Base):
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
     task_id: Mapped[int]
-    date: Mapped[datetime] = mapped_column(DateTime)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
 
 class Giveaway(Base):

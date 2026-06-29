@@ -25,16 +25,20 @@ async def get_users_count():
 
 async def get_statistics():
     now = datetime.now()
-    today = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
     start_of_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    today_str = today.strftime('%d.%m.%Y')
-    print(today_str)
-    start_of_month_str = start_of_month.strftime('%d.%m.%Y')
-
     async with async_session() as session:
-        daily_users = await session.scalar(select(func.count()).select_from(User).where(User.date == today_str))
-        monthly_users = await session.scalar(select(func.count()).select_from(User).where(User.date >= start_of_month_str))
-        total_users = await session.scalar(select(func.count()).select_from(User))
+        daily_users = await session.scalar(
+            select(func.count(User.id))
+            .where(User.created_at >= today_start)
+        )
+
+        monthly_users = await session.scalar(
+            select(func.count(User.id))
+            .where(User.created_at >= start_of_month)
+        )
+
+        total_users = await session.scalar(select(func.count(User.id)))
 
         return daily_users, monthly_users, total_users

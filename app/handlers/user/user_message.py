@@ -37,23 +37,19 @@ async def user_joined(message: Message):
         reply_markup=ikb.to_bot
     )
 
-    current_date = datetime.datetime.now().strftime("%d.%m.%Y")
-    await set_user(message.from_user.id, message.from_user.full_name, current_date)
+    await set_user(message.from_user.id, message.from_user.full_name)
 
 
 @user.callback_query(F.data == "check_sub")
 async def check_sub(callback: CallbackQuery):
-    current_date = datetime.datetime.now().strftime("%d.%m.%Y")
-    
     await callback.message.edit_text("Спасибо за подписку, вы можете пользоваться ботом!")
 
-    await set_user(callback.from_user.id, callback.from_user.full_name, current_date)
+    await set_user(callback.from_user.id, callback.from_user.full_name)
 
 
 @user.message(CommandStart(), ChatTypeFilter("private"))
 async def start_command(message: Message):
-    current_date = datetime.datetime.now().strftime("%d.%m.%Y")
-    await set_user(message.from_user.id, message.from_user.full_name, current_date)
+    await set_user(message.from_user.id, message.from_user.full_name)
 
     await message.answer("Добро пожаловать!",
                          reply_markup=ikb.user_panel)
