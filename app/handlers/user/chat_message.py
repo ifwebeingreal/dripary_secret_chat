@@ -34,7 +34,7 @@ async def profile(message: Message):
         f"<b>Имя:</b> {message.from_user.full_name}\n"
         f"<b>Баланс:</b> {user_info.balance} DRPY\n"
         f"<b>Ранг:</b> {user_info.rank_name}\n\n"
-        f"<b>Ты с нами с {user_info.date}!</b>"
+        f"<b>Ты с нами с {user_info.created_at}!</b>"
     )
 
 
