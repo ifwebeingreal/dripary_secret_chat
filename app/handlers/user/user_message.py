@@ -73,7 +73,7 @@ async def profile(callback: CallbackQuery):
         f"<b>Имя:</b> {callback.from_user.full_name}\n"
         f"<b>Баланс:</b> {user_info.balance} DRPY\n"
         f"<b>Ранг:</b> {user_info.rank_name}\n\n"
-        f"<b>Ты с нами с {user_info.date}!</b>",
+        f"<b>Ты с нами с {user_info.created_at}!</b>",
         reply_markup=ikb.profile_panel
     )
 
