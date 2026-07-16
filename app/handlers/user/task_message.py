@@ -20,10 +20,15 @@ task = Router()
 
 @task.callback_query(F.data == "tasks")
 async def tasks(callback: CallbackQuery):
-    await callback.message.edit_text(
-        "<b>Задания:</b>",
-        reply_markup=await bkb.user_tasks()
+    await callback.answer(
+        "Погоди не спеши...",
+        show_alert=True
     )
+
+    # await callback.message.edit_text(
+    #     "<b>Задания:</b>",
+    #     reply_markup=await bkb.user_tasks()
+    # )
 
 
 @task.callback_query(F.data.startswith("usertask_"))
