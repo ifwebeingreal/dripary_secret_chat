@@ -64,7 +64,7 @@ async def main():
 
     dp.include_router(user)
     dp.include_router(admin)
-    dp.include_router(chat)
+    # dp.include_router(chat)
     dp.include_router(outfit)
     dp.include_router(promo_code)
     dp.include_router(admin_task)

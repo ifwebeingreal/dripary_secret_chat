@@ -27,12 +27,16 @@ outfit = Router()
 
 @outfit.callback_query(F.data == "send_outfit")
 async def send_outfit(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(
-        "<b>Отправьте ваш аутфит:</b>",
-        reply_markup=ikb.user_back
+    await callback.answer(
+        "Погоди не спеши...",
+        show_alert=True
     )
-
-    await state.set_state(SendOutfit.image)
+    # await callback.message.edit_text(
+    #     "<b>Отправьте ваш аутфит:</b>",
+    #     reply_markup=ikb.user_back
+    # )
+    #
+    # await state.set_state(SendOutfit.image)
 
 
 @outfit.message(SendOutfit.image)

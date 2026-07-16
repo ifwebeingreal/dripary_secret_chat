@@ -65,44 +65,55 @@ async def start_command(message: Message):
 
 @user.callback_query(F.data == "profile")
 async def profile(callback: CallbackQuery):
-    tg_id = callback.from_user.id
-    user_info = await get_user(tg_id)
-
-    await callback.message.edit_text(
-        f"<b>Профиль пользователя</b>\n\n"
-        f"<b>Имя:</b> {callback.from_user.full_name}\n"
-        f"<b>Баланс:</b> {user_info.balance} DRPY\n"
-        f"<b>Ранг:</b> {user_info.rank_name}\n\n"
-        f"<b>Ты с нами с {user_info.created_at}!</b>",
-        reply_markup=ikb.profile_panel
+    await callback.answer(
+        "Погоди не спеши...",
+        show_alert=True
     )
+    # tg_id = callback.from_user.id
+    # user_info = await get_user(tg_id)
+    #
+    # await callback.message.edit_text(
+    #     f"<b>Профиль пользователя</b>\n\n"
+    #     f"<b>Имя:</b> {callback.from_user.full_name}\n"
+    #     f"<b>Баланс:</b> {user_info.balance} DRPY\n"
+    #     f"<b>Ранг:</b> {user_info.rank_name}\n\n"
+    #     f"<b>Ты с нами с {user_info.created_at}!</b>",
+    #     reply_markup=ikb.profile_panel
+    # )
 
 
 @user.callback_query(F.data == "code_info")
 async def code_info(callback: CallbackQuery):
-    tg_id = callback.from_user.id
-    user_info = await get_user(tg_id)
-
-    await callback.message.edit_text(
-        f"<b>Для того, чтобы получить промокод, нужно 100 кердитсов</b>\n\n"
-        f"<b>Ваш баланс:</b> <code>{user_info.balance} DPRY</code>\n\n"
-        f"<i>*Для повышения кредтсов выполняй задания</i>",
-        reply_markup=ikb.get_code
+    await callback.answer(
+        "Погоди не спеши...",
+        show_alert=True
     )
+    # tg_id = callback.from_user.id
+    # user_info = await get_user(tg_id)
+    #
+    # await callback.message.edit_text(
+    #     f"<b>Для того, чтобы получить промокод, нужно 100 кердитсов</b>\n\n"
+    #     f"<b>Ваш баланс:</b> <code>{user_info.balance} DPRY</code>\n\n"
+    #     f"<i>*Для повышения кредтсов выполняй задания</i>",
+    #     reply_markup=ikb.get_code
+    # )
 
 
 @user.callback_query(F.data == "get_code")
 async def get_code(callback: CallbackQuery):
-    tg_id = callback.from_user.id
-    user_info = await get_user(tg_id)
-
-    if user_info.balance < 100:
-        await callback.answer(
-            "На вашем счету недостаточно DRPY!",
-            show_alert=True
-        )
-        return
-
+    await callback.answer(
+        "Погоди не спеши...",
+        show_alert=True
+    )
+    # tg_id = callback.from_user.id
+    # user_info = await get_user(tg_id)
+    #
+    # if user_info.balance < 100:
+    #     await callback.answer(
+    #         "На вашем счету недостаточно DRPY!",
+    #         show_alert=True
+    #     )
+    #     return
 
 
 @user.callback_query(F.data == "user_back")
