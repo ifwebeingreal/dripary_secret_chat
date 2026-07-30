@@ -25,9 +25,9 @@ user = Router()
 #     photo_id = message.photo[-1].file_id
 #     await message.answer(photo_id)
 
-@user.message(F.text)
-async def get_html_text(message: Message):
-    print(message.html_text)
+# @user.message(F.text)
+# async def get_html_text(message: Message):
+#     print(message.html_text)
 
 
 @user.message(F.new_chat_members)
@@ -36,10 +36,11 @@ async def user_joined(message: Message):
         return
 
     await message.answer(
-        text=f"@{message.from_user.username} - новый дрипарь в нашем чате!\n"
-             f"Поприветствуем!",
+        text=f"""@{message.from_user.username} Поприветствуем новенького дрипаря в секретной банде! <tg-emoji emoji-id="5388769529260165076">🤩</tg-emoji>""",
         reply_markup=ikb.to_bot
     )
+
+    # TODO: добавить удаление через 30 сек
 
     await set_user(message.from_user.id, message.from_user.full_name)
 
