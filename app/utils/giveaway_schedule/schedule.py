@@ -29,15 +29,17 @@ async def get_giveaway_result(bot: Bot):
 
     name, tg_id, points = winner
 
-    text = (
-        f"🎉 <b>Итоги конкурса</b>\n\n"
-        f"<b>{giveaway.title}</b>\n"
-        f"{giveaway.description}\n\n"
-        f"🏆 <b>Победитель:</b>\n"
-        f"👤 {name}\n\n"
-        # f"💎 Баллы: {points}\n\n"
-        f"Поздравляем! 🎊"
-    )
+    # text = (
+    #     f"🎉 <b>Итоги конкурса</b>\n\n"
+    #     f"<b>{giveaway.title}</b>\n"
+    #     f"{giveaway.description}\n\n"
+    #     f"🏆 <b>Победитель:</b>\n"
+    #     f"👤 {name}\n\n"
+    #     # f"💎 Баллы: {points}\n\n"
+    #     f"Поздравляем! 🎊"
+    # )
+
+    text = f"""Победитель испытания n недели среди дрипарей - {name}"""
 
     try:
         await bot.send_photo(
