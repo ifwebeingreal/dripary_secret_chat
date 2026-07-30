@@ -25,6 +25,10 @@ user = Router()
 #     photo_id = message.photo[-1].file_id
 #     await message.answer(photo_id)
 
+@user.message(F.text)
+async def get_html_text(message: Message):
+    print(message.html_text)
+
 
 @user.message(F.new_chat_members)
 async def user_joined(message: Message):
@@ -51,7 +55,7 @@ async def check_sub(callback: CallbackQuery):
 async def start_command(message: Message):
     await set_user(message.from_user.id, message.from_user.full_name)
 
-    await message.answer("Добро пожаловать!",
+    await message.answer("Поднять авторитет на блоке",
                          reply_markup=ikb.user_panel)
 
     admins = await get_admins()
