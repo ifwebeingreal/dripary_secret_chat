@@ -49,6 +49,7 @@ async def giveaway_data(callback: CallbackQuery):
     await callback.message.answer_photo(
         photo=giveaway_info.file_id,
         caption=f"<b>Панель управления конкурсом</b>\n\n"
+                f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
                 f"<b>Заголовок:</b> {giveaway_info.title}\n"
                 f"<b>Описание:</b> {giveaway_info.description}\n"
                 f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
@@ -82,6 +83,7 @@ async def check_new_title(message: Message, state: FSMContext):
         await message.answer_photo(
             photo=giveaway_info.file_id,
             caption=f"<b>Панель управления конкурсом</b>\n\n"
+                    f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
                     f"<b>Заголовок:</b> {giveaway_info.title}\n"
                     f"<b>Описание:</b> {giveaway_info.description}\n"
                     f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
@@ -121,6 +123,7 @@ async def check_new_description(message: Message, state: FSMContext):
         await message.answer_photo(
             photo=giveaway_info.file_id,
             caption=f"<b>Панель управления конкурсом</b>\n\n"
+                    f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
                     f"<b>Заголовок:</b> {giveaway_info.title}\n"
                     f"<b>Описание:</b> {giveaway_info.description}\n"
                     f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
@@ -160,6 +163,7 @@ async def check_new_file_id(message: Message, state: FSMContext):
         await message.answer_photo(
             photo=giveaway_info.file_id,
             caption=f"<b>Панель управления конкурсом</b>\n\n"
+                    f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
                     f"<b>Заголовок:</b> {giveaway_info.title}\n"
                     f"<b>Описание:</b> {giveaway_info.description}\n"
                     f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
@@ -199,6 +203,7 @@ async def check_new_winners_count(message: Message, state: FSMContext):
         await message.answer_photo(
             photo=giveaway_info.file_id,
             caption=f"<b>Панель управления конкурсом</b>\n\n"
+                    f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
                     f"<b>Заголовок:</b> {giveaway_info.title}\n"
                     f"<b>Описание:</b> {giveaway_info.description}\n"
                     f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
@@ -251,7 +256,7 @@ async def accept_winners(callback: CallbackQuery, state: FSMContext, bot: Bot):
     winners_text = data.get("winners_text")
     giveaway_info = await get_giveaway(1)
 
-    text = f"Победитель испытания n недели среди дрипарей\n\n{winners_text}"
+    text = f"Победитель испытания {giveaway_info.week_count} недели среди дрипарей\n\n{winners_text}"
 
     try:
         await bot.send_photo(

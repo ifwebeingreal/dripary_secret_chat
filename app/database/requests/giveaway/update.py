@@ -33,3 +33,11 @@ async def update_giveaway_winners_count(id: int, winners_count: int):
             update(Giveaway).where(Giveaway.id == id).values(winners_count=winners_count)
         )
         await session.commit()
+
+
+async def increment_giveaway_week_count(giveaway_id: int):
+    async with async_session() as session:
+        await session.execute(
+            update(Giveaway).where(Giveaway.id == giveaway_id).values(week_count=Giveaway.week_count + 1)
+        )
+        await session.commit()

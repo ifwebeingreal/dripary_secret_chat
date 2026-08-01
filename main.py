@@ -28,7 +28,11 @@ from app.handlers.admin.giveaway_message import giveaway
 
 from app.database.models import create_db
 
-from app.utils.giveaway_schedule.schedule import send_notify_about_giveaway, get_giveaway_result
+from app.utils.giveaway_schedule.schedule import (
+    send_notify_about_giveaway,
+    get_giveaway_result,
+    new_giveaway_week
+)
 
 scheduler = AsyncIOScheduler()
 
@@ -84,6 +88,14 @@ async def main():
         trigger='cron',
         day_of_week='sun',
         hour=11,
+        minute=0,
+        kwargs={'bot': bot}
+    )
+    scheduler.add_job(
+        new_giveaway_week,
+        trigger='cron',
+        day_of_week='sun',
+        hour=20,
         minute=0,
         kwargs={'bot': bot}
     )

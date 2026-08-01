@@ -1,7 +1,9 @@
 from aiogram import Bot
 from config import config
 from app.database.requests.user.select import get_users
-from app.database.requests.giveaway.select import get_giveaway
+from app.database.requests.admin.select import get_admins
+from app.database.requests.giveaway.select import get_giveaway, get_giveaway_winners
+from app.database.requests.giveaway.update import increment_giveaway_week_count
 from app.database.requests.user_task.select import get_random_top_user_this_week
 
 
@@ -18,16 +20,21 @@ async def send_notify_about_giveaway(bot: Bot):
 async def get_giveaway_result(bot: Bot):
     giveaway = await get_giveaway(1)
 
-    winner = await get_random_top_user_this_week()
+    winners = await get_giveaway_winners(1)
 
-    if not winner:
+    winners_text = "\n".join(
+        f"{i + 1}. @{user.username or user.first_name} (<code>{user.tg_id}</code>)"
+        for i, user in enumerate(winners)
+    )
+
+    if not winners_text:
         await bot.send_message(
             chat_id=config.bot.chat_id,
             text="❌ Нет участников для подведения итогов"
         )
         return
 
-    name, tg_id, points = winner
+    # name, tg_id, points = winner
 
     # text = (
     #     f"🎉 <b>Итоги конкурса</b>\n\n"
@@ -39,7 +46,7 @@ async def get_giveaway_result(bot: Bot):
     #     f"Поздравляем! 🎊"
     # )
 
-    text = f"""Победитель испытания n недели среди дрипарей - {name}"""
+    text = f"Победитель испытания {giveaway.week_count} недели среди дрипарей\n\n{winners_text}"
 
     try:
         await bot.send_photo(
@@ -52,4 +59,17 @@ async def get_giveaway_result(bot: Bot):
         await bot.send_message(
             chat_id=config.bot.chat_id,
             text=text
+        )
+
+
+async def new_giveaway_week(bot: Bot):
+    admins = await get_admins()
+    await increment_giveaway_week_count(1)
+    giveaway = await get_giveaway(1)
+
+    for admin in admins:
+        await bot.send_message(
+            chat_id=admin.tg_id,
+            text=f"<b>Неделя конкурса была обновлена!</b>\n\n"
+                 f"<b>Текущая неделя:</b> {giveaway.week_count}\n"
         )
