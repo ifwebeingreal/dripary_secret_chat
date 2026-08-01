@@ -5,7 +5,8 @@ from sqlalchemy import select
 
 async def set_user(tg_id: int, first_name: str,
                    balance: int = 0,
-                   rank_name: str = "Новичок", game_points: int = 0):
+                   rank_name: str = "Новичок", game_points: int = 0,
+                   username: str = None):
     async with async_session() as session:
         user = await session.scalar(select(User).where(User.tg_id == tg_id))
 
@@ -14,5 +15,6 @@ async def set_user(tg_id: int, first_name: str,
                              first_name=first_name,
                              balance=balance,
                              rank_name=rank_name,
-                             game_points=game_points))
+                             game_points=game_points,
+                             username=username))
             await session.commit()

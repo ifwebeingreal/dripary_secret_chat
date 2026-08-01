@@ -42,7 +42,7 @@ async def user_joined(message: Message):
 
     # TODO: добавить удаление через 30 сек
 
-    await set_user(message.from_user.id, message.from_user.full_name)
+    await set_user(message.from_user.id, message.from_user.full_name, username=message.from_user.username)
 
 
 @user.callback_query(F.data == "check_sub")
@@ -54,7 +54,7 @@ async def check_sub(callback: CallbackQuery):
 
 @user.message(CommandStart(), ChatTypeFilter("private"))
 async def start_command(message: Message):
-    await set_user(message.from_user.id, message.from_user.full_name)
+    await set_user(message.from_user.id, message.from_user.full_name, username=message.from_user.username)
 
     await message.answer("Поднять авторитет на блоке",
                          reply_markup=ikb.user_panel)

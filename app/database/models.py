@@ -25,6 +25,7 @@ class User(Base):
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
     first_name: Mapped[str] = mapped_column(String)
+    username: Mapped[str] = mapped_column(String, nullable=True)
     balance: Mapped[int] = mapped_column(default=0)
     rank_name: Mapped[str] = mapped_column(String)
     game_points: Mapped[int] = mapped_column(default=0)

@@ -210,3 +210,7 @@ async def check_new_winners_count(message: Message, state: FSMContext):
     else:
         await message.answer("Количество должно быть больше нуля!",
                              reply_markup=ikb.admin_cancel)
+
+
+@giveaway.callback_query(F.data == "change_giveaway_winner")
+async def change_giveaway_winner(callback: CallbackQuery):
