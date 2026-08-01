@@ -90,6 +90,7 @@ class Giveaway(Base):
     title: Mapped[str]
     description: Mapped[str]
     file_id: Mapped[str]
+    winners_count: Mapped[int] = mapped_column(nullable=True, default=1, server_default="1")
 
 
 async def create_db():
