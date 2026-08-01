@@ -5,6 +5,7 @@ from app.database.requests.admin.select import get_admins
 from app.database.requests.giveaway.select import get_giveaway, get_giveaway_winners
 from app.database.requests.giveaway.update import increment_giveaway_week_count
 from app.database.requests.user_task.select import get_random_top_user_this_week
+from app.database.requests.giveaway_result.add import set_giveaway_result
 
 
 async def send_notify_about_giveaway(bot: Bot):
@@ -60,6 +61,14 @@ async def get_giveaway_result(bot: Bot):
             chat_id=config.bot.chat_id,
             text=text
         )
+
+    await set_giveaway_result(
+        title=giveaway.title,
+        description=giveaway.description,
+        file_id=giveaway.file_id,
+        week_number=giveaway.week_count,
+        winners_text=text
+    )
 
 
 async def new_giveaway_week(bot: Bot):

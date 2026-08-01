@@ -95,6 +95,18 @@ class Giveaway(Base):
     week_count: Mapped[int] = mapped_column(nullable=True, server_default="0")
 
 
+class GiveawayResult(Base):
+    __tablename__ = 'giveaways_results'
+
+    id: Mapped[intpk]
+    title: Mapped[str] = mapped_column(String, nullable=True)
+    description: Mapped[str] = mapped_column(String, nullable=True)
+    file_id: Mapped[str] = mapped_column(String, nullable=True)
+    winners_text: Mapped[str] = mapped_column(String)
+    week_number: Mapped[int] = mapped_column()
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
+
+
 async def create_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

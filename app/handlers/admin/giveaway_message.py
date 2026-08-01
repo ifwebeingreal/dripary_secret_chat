@@ -10,6 +10,9 @@ import app.keyboards.inline as ikb
 from app.database.requests.giveaway.select import get_giveaway, get_giveaway_winners
 from app.database.requests.giveaway.update import (update_giveaway_file_id, update_giveaway_title,
                                                    update_giveaway_description, update_giveaway_winners_count)
+from app.database.requests.giveaway_result.add import set_giveaway_result
+from app.database.requests.giveaway_result.select import get_giveaway_result_by_week_number
+from app.database.requests.giveaway_result.update import update_giveaway_result_winners_text
 
 from app.states import EditGiveaway
 
@@ -269,6 +272,22 @@ async def accept_winners(callback: CallbackQuery, state: FSMContext, bot: Bot):
         await bot.send_message(
             chat_id=config.bot.chat_id,
             text=text
+        )
+
+    result = await get_giveaway_result_by_week_number(giveaway_info.week_count)
+
+    if not result:
+        await set_giveaway_result(
+            week_number=giveaway_info.week_count,
+            title=giveaway_info.title,
+            description=giveaway_info.description,
+            file_id=giveaway_info.file_id,
+            winners_text=text
+        )
+    else:
+        await update_giveaway_result_winners_text(
+            results_id=result.id,
+            winners_text=text
         )
 
     await callback.message.edit_text(
