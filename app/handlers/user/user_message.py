@@ -20,10 +20,10 @@ from app.filters.chat_type import ChatTypeFilter
 user = Router()
 
 
-# @user.message(F.photo)
-# async def get_photo_id(message: Message):
-#     photo_id = message.photo[-1].file_id
-#     await message.answer(photo_id)
+@user.message(F.photo)
+async def get_photo_id(message: Message):
+    photo_id = message.photo[-1].file_id
+    await message.answer(photo_id)
 
 # @user.message(F.text)
 # async def get_html_text(message: Message):
