@@ -70,6 +70,14 @@ giveaway_panel = InlineKeyboardMarkup(
     ]
 )
 
+check_winners = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [InlineKeyboardButton(text="✅ Все верно", callback_data="accept_winners")],
+        [InlineKeyboardButton(text="🔄 Избрать заново", callback_data="change_giveaway_winner")],
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="giveaway")],
+    ]
+)
+
 check_sub = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton(text="Подписаться", url=config.bot.channel_link)],

@@ -7,11 +7,13 @@ from aiogram.fsm.context import FSMContext
 import app.keyboards.builder as bkb
 import app.keyboards.inline as ikb
 
-from app.database.requests.giveaway.select import get_giveaway
+from app.database.requests.giveaway.select import get_giveaway, get_giveaway_winners
 from app.database.requests.giveaway.update import (update_giveaway_file_id, update_giveaway_title,
                                                    update_giveaway_description, update_giveaway_winners_count)
 
 from app.states import EditGiveaway
+
+from config import config
 
 
 giveaway = Router()
@@ -213,4 +215,60 @@ async def check_new_winners_count(message: Message, state: FSMContext):
 
 
 @giveaway.callback_query(F.data == "change_giveaway_winner")
-async def change_giveaway_winner(callback: CallbackQuery):
+async def change_giveaway_winner(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+    await callback.message.delete()
+
+    winners = await get_giveaway_winners(1)
+
+    winners_text = "\n".join(
+        f"{i + 1}. @{user.username or user.first_name} (<code>{user.tg_id}</code>)"
+        for i, user in enumerate(winners)
+    )
+
+    text = (
+        "🏆 <b>Предварительные результаты розыгрыша</b>\n\n"
+        "Случайным образом были выбраны следующие победители:\n\n"
+        f"{winners_text}\n\n"
+        "Если всё верно, нажмите <b>«Подтвердить»</b> — результаты будут опубликованы в чате.\n"
+        "Если хотите выбрать победителей заново, нажмите <b>«Перевыбрать»</b> или <b>«Отмена»</b>."
+    )
+
+    await state.update_data(winners_text=winners_text)
+
+    await callback.message.answer(
+        text,
+        reply_markup=ikb.check_winners
+    )
+
+    await state.set_state(EditGiveaway.new_winners)
+
+
+@giveaway.callback_query(F.data == "accept_winners", EditGiveaway.new_winners)
+async def accept_winners(callback: CallbackQuery, state: FSMContext, bot: Bot):
+    data = await state.get_data()
+
+    winners_text = data.get("winners_text")
+    giveaway_info = await get_giveaway(1)
+
+    text = f"Победитель испытания n недели среди дрипарей\n\n{winners_text}"
+
+    try:
+        await bot.send_photo(
+            chat_id=config.bot.chat_id,
+            photo=giveaway_info.file_id,
+            caption=text
+        )
+    except Exception:
+        # если фото протухло
+        await bot.send_message(
+            chat_id=config.bot.chat_id,
+            text=text
+        )
+
+    await callback.message.edit_text(
+        "<b>Результаты были отправлены в группу</b>",
+        reply_markup=ikb.admin_cancel
+    )
+
+    await state.clear()
