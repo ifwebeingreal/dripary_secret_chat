@@ -47,7 +47,7 @@ async def get_giveaway_result(bot: Bot):
     #     f"Поздравляем! 🎊"
     # )
 
-    text = f"Победитель испытания {giveaway.week_count} недели среди дрипарей\n\n{winners_text}"
+    text = f"Победитель испытания {giveaway.week_count} недели банды\n\n{winners_text}"
 
     try:
         await bot.send_photo(

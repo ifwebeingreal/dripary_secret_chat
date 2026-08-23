@@ -259,7 +259,7 @@ async def accept_winners(callback: CallbackQuery, state: FSMContext, bot: Bot):
     winners_text = data.get("winners_text")
     giveaway_info = await get_giveaway(1)
 
-    text = f"Победитель испытания {giveaway_info.week_count} недели среди дрипарей\n\n{winners_text}"
+    text = f"Победитель испытания {giveaway_info.week_count} недели банды\n\n{winners_text}"
 
     try:
         await bot.send_photo(
