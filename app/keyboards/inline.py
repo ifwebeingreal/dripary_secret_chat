@@ -20,6 +20,7 @@ admin_cancel = InlineKeyboardMarkup(
 
 user_panel = InlineKeyboardMarkup(
     inline_keyboard=[
+        [InlineKeyboardButton(text="Розыгрыши", callback_data="all_giveaways")],
         [InlineKeyboardButton(text="Задания", callback_data="tasks")],
         [InlineKeyboardButton(text="Отправить аутфит", callback_data="send_outfit")],
         [InlineKeyboardButton(text="Профиль", callback_data="profile")],

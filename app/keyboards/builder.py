@@ -4,6 +4,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from app.database.requests.admin.select import get_admins
 from app.database.requests.promo_code.select import get_promo_codes
 from app.database.requests.task.select import get_tasks
+from app.database.requests.giveaway_result.select import get_all_giveaway_results
 
 
 async def admins_cb():
@@ -116,5 +117,18 @@ async def check_task(task_id: int, tg_id: int):
     kb.row(InlineKeyboardButton(text="✅ Подтвердить", callback_data=f"accept_task_{task_id}_{tg_id}"))
     kb.row(InlineKeyboardButton(text="❌ Отклонить", callback_data=f"reject_task_{task_id}_{tg_id}"))
     kb.row(InlineKeyboardButton(text="🏷️ Задание", callback_data=f"show_task_{task_id}_{tg_id}"))
+
+    return kb.as_markup()
+
+
+async def result_cb():
+    kb = InlineKeyboardBuilder()
+
+    results = await get_all_giveaway_results()
+
+    for result in results:
+        kb.row(InlineKeyboardButton(text=f"Неделя №{result.week_number}", callback_data=f"result_{result.id}"))
+
+    kb.row(InlineKeyboardButton(text="🔙 Назад", callback_data=f"user_back"))
 
     return kb.as_markup()

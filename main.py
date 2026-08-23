@@ -20,6 +20,7 @@ from app.handlers.user.user_message import user
 from app.handlers.user.chat_message import chat
 from app.handlers.user.outfit_message import outfit
 from app.handlers.user.task_message import task as user_task
+from app.handlers.user.giveaway_result_message import giveaway_result
 
 from app.handlers.admin.admin_message import admin
 from app.handlers.admin.promo_code_message import promo_code
@@ -65,6 +66,8 @@ async def main():
     user.callback_query.middleware(MemberProtect())
     user_task.message.middleware(MemberProtect())
     user_task.callback_query.middleware(MemberProtect())
+    giveaway_result.message.middleware(MemberProtect())
+    giveaway_result.callback_query.middleware(MemberProtect())
 
     dp.include_router(user)
     dp.include_router(admin)
@@ -74,6 +77,7 @@ async def main():
     dp.include_router(admin_task)
     dp.include_router(user_task)
     dp.include_router(giveaway)
+    dp.include_router(giveaway_result)
 
     scheduler.add_job(
         send_notify_about_giveaway,

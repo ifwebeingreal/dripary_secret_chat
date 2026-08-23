@@ -123,9 +123,16 @@ async def get_code(callback: CallbackQuery):
 
 @user.callback_query(F.data == "user_back")
 async def user_back(callback: CallbackQuery, state: FSMContext):
-    await callback.message.edit_text(
-        f"Добро пожаловать!",
-        reply_markup=ikb.user_panel
-    )
+    try:
+        await callback.message.edit_text("Поднять авторитет на блоке",
+                             reply_markup=ikb.user_panel)
+    except Exception as e:
+        print(str(e))
+
+        await callback.answer()
+        await callback.message.delete()
+
+        await callback.message.answer("Поднять авторитет на блоке",
+                                         reply_markup=ikb.user_panel)
 
     await state.clear()
