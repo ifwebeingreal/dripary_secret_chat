@@ -16,7 +16,7 @@ giveaway_result = Router()
 @giveaway_result.callback_query(F.data == "all_giveaways")
 async def all_giveaways(callback: CallbackQuery):
     await callback.message.edit_text(
-        "<b>Архив с розыгрышами за всю историю <b>секретной банды:</b>",
+        "Архив с розыгрышами за всю историю <b>секретной банды:</b>",
         reply_markup=await bkb.result_cb()
     )
 
