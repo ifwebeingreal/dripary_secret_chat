@@ -35,10 +35,10 @@ async def user_joined(message: Message):
     if message.chat.id != config.bot.chat_id:
         return
 
-    await message.answer(
-        text=f"""@{message.from_user.username} Поприветствуем новенького дрипаря в секретной банде! <tg-emoji emoji-id="5388769529260165076">🤩</tg-emoji>""",
-        reply_markup=ikb.to_bot
-    )
+    # await message.answer(
+    #     text=f"""@{message.from_user.username} Поприветствуем новенького дрипаря в секретной банде! <tg-emoji emoji-id="5388769529260165076">🤩</tg-emoji>""",
+    #     reply_markup=ikb.to_bot
+    # )
 
     # TODO: добавить удаление через 30 сек
 
