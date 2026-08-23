@@ -10,3 +10,4 @@ async def update_giveaway_result_winners_text(results_id: int, winners_text: str
             .where(GiveawayResult.id == results_id)
             .values(winners_text=winners_text)
         )
+        await session.commit()
