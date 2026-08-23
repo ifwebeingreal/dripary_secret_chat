@@ -32,8 +32,7 @@ async def get_giveaway_results(callback: CallbackQuery):
     try:
         await callback.message.answer_photo(
             photo=result.file_id,
-            caption=f"<b>Розыгрыш недели №{result.week_number}</b>\n\n"
-                    f"<b>{result.title}</b>\n\n"
+            caption=f"<b>{result.title}</b>\n\n"
                     f"{result.winners_text}\n\n"
                     f"<i>Дата проведения: {result.created_at}</i>",
             reply_markup=ikb.user_back
@@ -41,8 +40,7 @@ async def get_giveaway_results(callback: CallbackQuery):
     except Exception as e:
         print(str(e))
         await callback.message.answer(
-            text=f"<b>Розыгрыш недели №{result.week_number}</b>\n\n"
-                    f"<b>{result.title}</b>\n\n"
+            text=f"<b>{result.title}</b>\n\n"
                     f"{result.winners_text}\n\n"
                     f"<i>Дата проведения: {result.created_at}</i>",
             reply_markup=ikb.user_back
