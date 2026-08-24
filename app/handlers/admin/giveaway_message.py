@@ -296,3 +296,19 @@ async def accept_winners(callback: CallbackQuery, state: FSMContext, bot: Bot):
     )
 
     await state.clear()
+
+
+@giveaway.callback_query(F.data == "send_giveaway_post_more")
+async def send_giveaway_post_more(callback: CallbackQuery, bot: Bot):
+    giveaway_info = await get_giveaway(1)
+
+    await bot.send_photo(
+        chat_id=config.bot.chat_id,
+        photo=giveaway_info.file_id,
+        caption=f"<b>{giveaway_info.title}</b>\n\n{giveaway_info.description}"
+    )
+
+    await callback.message.edit_text(
+        "<b>Пост с розыгрышем был успешно отправлен в чат!</b>",
+        reply_markup=ikb.admin_cancel
+    )
