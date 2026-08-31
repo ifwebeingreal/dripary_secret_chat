@@ -31,9 +31,15 @@ user = Router()
 
 
 @user.message(F.new_chat_members)
-async def user_joined(message: Message):
+async def user_joined(message: Message, bot: Bot):
     if message.chat.id != config.bot.chat_id:
         return
+
+    # await bot.set_chat_member_tag(
+    #     chat_id=chat_id,
+    #     user_id=user_id,
+    #     tag="Профи"
+    # )
 
     await message.answer(
         text=f"""@{message.from_user.username} Поприветствуем новенького дрипаря в секретной банде! <tg-emoji emoji-id="5388769529260165076">🤩</tg-emoji>""",
@@ -125,7 +131,7 @@ async def get_code(callback: CallbackQuery):
 async def user_back(callback: CallbackQuery, state: FSMContext):
     try:
         await callback.message.edit_text("Поднять авторитет на блоке",
-                             reply_markup=ikb.user_panel)
+                                         reply_markup=ikb.user_panel)
     except Exception as e:
         print(str(e))
 
@@ -133,6 +139,6 @@ async def user_back(callback: CallbackQuery, state: FSMContext):
         await callback.message.delete()
 
         await callback.message.answer("Поднять авторитет на блоке",
-                                         reply_markup=ikb.user_panel)
+                                      reply_markup=ikb.user_panel)
 
     await state.clear()

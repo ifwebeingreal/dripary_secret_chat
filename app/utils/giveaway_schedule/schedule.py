@@ -14,52 +14,50 @@ async def send_notify_about_giveaway(bot: Bot):
     await bot.send_photo(
         chat_id=config.bot.chat_id,
         photo=giveaway.file_id,
-        caption=f"<b>{giveaway.title}</b>\n\n{giveaway.description}"
+        caption=f"<b>{giveaway.title}</b>\n\n{giveaway.description}",
     )
 
 
 async def get_giveaway_result(bot: Bot):
     giveaway = await get_giveaway(1)
 
-    winners = await get_giveaway_winners(1)
+    if giveaway is None:
+        return
 
-    winners_text = "\n".join(
-        f"{i + 1}. @{user.username or user.first_name} (<code>{user.tg_id}</code>)"
-        for i, user in enumerate(winners)
+    winners = await get_giveaway_winners(
+        bot=bot,
+        giveaway_id=1,
     )
 
-    if not winners_text:
+    if not winners:
         await bot.send_message(
             chat_id=config.bot.chat_id,
-            text="❌ Нет участников для подведения итогов"
+            text="❌ Нет подходящих участников для подведения итогов",
         )
         return
 
-    # name, tg_id, points = winner
+    winners_text = "\n".join(
+        f"{i + 1}. @{user.username or user.first_name} "
+        f"(<code>{user.tg_id}</code>)"
+        for i, user in enumerate(winners)
+    )
 
-    # text = (
-    #     f"🎉 <b>Итоги конкурса</b>\n\n"
-    #     f"<b>{giveaway.title}</b>\n"
-    #     f"{giveaway.description}\n\n"
-    #     f"🏆 <b>Победитель:</b>\n"
-    #     f"👤 {name}\n\n"
-    #     # f"💎 Баллы: {points}\n\n"
-    #     f"Поздравляем! 🎊"
-    # )
-
-    text = f"Победитель испытания {giveaway.week_count} недели банды\n\n{winners_text}"
+    text = (
+        f"🏆 Победители испытания "
+        f"{giveaway.week_count} недели банды\n\n"
+        f"{winners_text}"
+    )
 
     try:
         await bot.send_photo(
             chat_id=config.bot.chat_id,
             photo=giveaway.file_id,
-            caption=text
+            caption=text,
         )
     except Exception:
-        # если фото протухло
         await bot.send_message(
             chat_id=config.bot.chat_id,
-            text=text
+            text=text,
         )
 
     await set_giveaway_result(
@@ -67,9 +65,8 @@ async def get_giveaway_result(bot: Bot):
         description=giveaway.description,
         file_id=giveaway.file_id,
         week_number=giveaway.week_count,
-        winners_text=text
+        winners_text=text,
     )
-
 
 async def new_giveaway_week(bot: Bot):
     admins = await get_admins()
@@ -80,5 +77,5 @@ async def new_giveaway_week(bot: Bot):
         await bot.send_message(
             chat_id=admin.tg_id,
             text=f"<b>Неделя конкурса была обновлена!</b>\n\n"
-                 f"<b>Текущая неделя:</b> {giveaway.week_count}\n"
+            f"<b>Текущая неделя:</b> {giveaway.week_count}\n",
         )
