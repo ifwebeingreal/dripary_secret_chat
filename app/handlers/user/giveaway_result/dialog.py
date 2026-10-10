@@ -54,7 +54,7 @@ giveaway_dialog = Dialog(
             PrevPage(scroll="giveaways_scroll", text=Const("⬅️")),
             CurrentPage(
                 scroll="giveaways_scroll",
-                text=Format("{current_page} / {pages}"),
+                text=Format("{current_page + 1} / {pages}"),
             ),
             NextPage(scroll="giveaways_scroll", text=Const("➡️")),
         ),
