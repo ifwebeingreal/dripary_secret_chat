@@ -45,7 +45,7 @@ giveaway_dialog = Dialog(
                 on_click=on_giveaway,
             ),
             width=1,
-            height=3,
+            height=5,
             id="giveaways_scroll",
             hide_pager=True,
         ),
