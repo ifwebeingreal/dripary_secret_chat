@@ -31,7 +31,7 @@ async def giveaway_info_getter(dialog_manager: DialogManager, **kwargs):
         }
 
     file_id = MediaAttachment(
-        type=ContentType.DOCUMENT, file_id=MediaId(file_id=giveaway.file_id)
+        type=ContentType.PHOTO, file_id=MediaId(file_id=giveaway.file_id)
     )
 
     return {
