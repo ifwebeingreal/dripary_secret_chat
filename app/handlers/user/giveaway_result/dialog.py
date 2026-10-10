@@ -15,6 +15,7 @@ from aiogram_dialog.widgets.kbd import (
     PrevPage,
     NextPage,
     Group,
+    CurrentPage,
 )
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Format, Const
@@ -51,6 +52,10 @@ giveaway_dialog = Dialog(
         ),
         Row(
             PrevPage(scroll="giveaways_scroll", text=Const("⬅️")),
+            CurrentPage(
+                scroll="giveaways_scroll",
+                text=Format("{current_page} / {pages}"),
+            ),
             NextPage(scroll="giveaways_scroll", text=Const("➡️")),
         ),
         Column(
@@ -75,5 +80,7 @@ giveaway_dialog = Dialog(
 
 
 @giveaway.callback_query(F.data == "all_giveaways")
-async def all_giveaways_callback(callback: CallbackQuery, dialog_manager: DialogManager):
+async def all_giveaways_callback(
+    callback: CallbackQuery, dialog_manager: DialogManager
+):
     await dialog_manager.start(GiveawaySG.all_giveaways, mode=StartMode.RESET_STACK)
