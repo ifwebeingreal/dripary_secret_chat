@@ -39,3 +39,8 @@ class EditGiveaway(StatesGroup):
     new_file_id = State()
     new_winners_count = State()
     new_winners = State()
+
+
+class GiveawaySG(StatesGroup):
+    all_giveaways = State()
+    giveaway_info = State()

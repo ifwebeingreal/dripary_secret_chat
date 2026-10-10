@@ -5,7 +5,9 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
+from aiogram_dialog import setup_dialogs
 
+from aiogram.fsm.storage.base import DefaultKeyBuilder
 from aiogram.fsm.storage.redis import RedisStorage
 import redis.asyncio as aioredis
 
@@ -20,7 +22,8 @@ from app.handlers.user.user_message import user
 from app.handlers.user.chat_message import chat
 from app.handlers.user.outfit_message import outfit
 from app.handlers.user.task_message import task as user_task
-from app.handlers.user.giveaway_result_message import giveaway_result
+# from app.handlers.user.giveaway_result_message import giveaway_result
+from app.handlers.user.giveaway_result.dialog import giveaway_dialog, giveaway as giveaway_result
 
 from app.handlers.admin.admin_message import admin
 from app.handlers.admin.promo_code_message import promo_code
@@ -46,7 +49,7 @@ async def main():
 
     bot = Bot(token=config.bot.bot_token,
               default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    dp = Dispatcher(storage=RedisStorage(redis))
+    dp = Dispatcher(storage=RedisStorage(redis, DefaultKeyBuilder(with_destiny=True)))
 
     # dp.message.middleware(CheckSubscription())
     # dp.callback_query.middleware(CheckSubscriptionCallback())
@@ -78,6 +81,9 @@ async def main():
     dp.include_router(user_task)
     dp.include_router(giveaway)
     dp.include_router(giveaway_result)
+    dp.include_router(giveaway_dialog)
+
+    setup_dialogs(dp)
 
     scheduler.add_job(
         send_notify_about_giveaway,
