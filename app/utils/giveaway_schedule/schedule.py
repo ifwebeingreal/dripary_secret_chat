@@ -36,9 +36,18 @@ async def get_giveaway_result(bot: Bot):
         )
         return
 
+    for winner in winners:
+        try:
+            await bot.set_chat_member_tag(
+                chat_id=config.bot.chat_id,
+                user_id=winner.tg_id,
+                tag=f"🏆#{giveaway.week_count}",
+            )
+        except Exception as e:
+            print(f"Не удалось установить тег " f"{winner.tg_id}: {e}")
+
     winners_text = "\n".join(
-        f"{i + 1}. @{user.username or user.first_name} "
-        f"(<code>{user.tg_id}</code>)"
+        f"{i + 1}. @{user.username or user.first_name} " f"(<code>{user.tg_id}</code>)"
         for i, user in enumerate(winners)
     )
 
@@ -67,6 +76,7 @@ async def get_giveaway_result(bot: Bot):
         week_number=giveaway.week_count,
         winners_text=text,
     )
+
 
 async def new_giveaway_week(bot: Bot):
     admins = await get_admins()
