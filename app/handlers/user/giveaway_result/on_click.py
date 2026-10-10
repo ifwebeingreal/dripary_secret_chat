@@ -16,9 +16,19 @@ async def on_back_menu(
 ):
     await dialog_manager.done()
 
-    await callback.message.edit_text(
-        "Поднять авторитет на блоке", reply_markup=ikb.user_panel
-    )
+    try:
+        await callback.message.edit_text(
+            "Поднять авторитет на блоке", reply_markup=ikb.user_panel
+        )
+    except Exception as e:
+        print(e)
+
+        await callback.answer()
+        await callback.message.delete()
+
+        await callback.message.answer(
+            "Поднять авторитет на блоке", reply_markup=ikb.user_panel
+        )
 
 
 async def on_giveaway(
@@ -38,4 +48,3 @@ async def on_giveaway(
     dialog_manager.dialog_data.update(giveaway_id=int(giveaway_id))
 
     await dialog_manager.next()
-
