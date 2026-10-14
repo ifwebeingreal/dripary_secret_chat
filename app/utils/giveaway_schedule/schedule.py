@@ -41,7 +41,7 @@ async def get_giveaway_result(bot: Bot):
             await bot.set_chat_member_tag(
                 chat_id=config.bot.chat_id,
                 user_id=winner.tg_id,
-                tag=f"🏆#{giveaway.week_count}",
+                tag=f"WINNER#{giveaway.week_count}",
             )
         except Exception as e:
             print(f"Не удалось установить тег " f"{winner.tg_id}: {e}")
