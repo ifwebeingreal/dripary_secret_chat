@@ -252,15 +252,49 @@ async def change_giveaway_winner(
         )
         return
 
+    # Получаем актуальные данные победителей из Telegram
+    winners_data = []
+
+    for winner in winners:
+        try:
+            member = await bot.get_chat_member(
+                chat_id=config.bot.chat_id,
+                user_id=winner.tg_id,
+            )
+
+            actual_user = member.user
+
+            username = actual_user.username
+            first_name = actual_user.first_name
+
+        except Exception as e:
+            print(f"Не удалось получить актуальные данные " f"{winner.tg_id}: {e}")
+
+            username = winner.username
+            first_name = winner.first_name
+
+        winners_data.append(
+            {
+                "tg_id": winner.tg_id,
+                "username": username,
+                "first_name": first_name,
+            }
+        )
+
     winners_text = "\n".join(
-        f"{i + 1}. @{user.username or user.first_name} " f"(<code>{user.tg_id}</code>)"
-        for i, user in enumerate(winners)
+        (
+            f"{i + 1}. "
+            f"{'@' + user['username'] if user['username'] else user['first_name']} "
+            f"(<code>{user['tg_id']}</code>)"
+        )
+        for i, user in enumerate(winners_data)
     )
 
     if len(winners) < giveaway_info.winners_count:
         warning = (
             f"\n\n⚠️ Найдено только <b>{len(winners)}</b> "
-            f"из <b>{giveaway_info.winners_count}</b> необходимых победителей."
+            f"из <b>{giveaway_info.winners_count}</b> "
+            f"необходимых победителей."
         )
     else:
         warning = ""
@@ -276,8 +310,10 @@ async def change_giveaway_winner(
         "нажмите <b>«Перевыбрать»</b>."
     )
 
+    # Храним не только текст, но и ID новых победителей
     await state.update_data(
         winners_text=winners_text,
+        winner_ids=[winner["tg_id"] for winner in winners_data],
     )
 
     await callback.message.answer(
@@ -300,9 +336,11 @@ async def accept_winners(
     await callback.answer()
 
     data = await state.get_data()
-    winners_text = data.get("winners_text")
 
-    if not winners_text:
+    winners_text = data.get("winners_text")
+    winner_ids = data.get("winner_ids", [])
+
+    if not winners_text or not winner_ids:
         await callback.message.edit_text(
             "❌ Победители не были выбраны.",
             reply_markup=ikb.admin_cancel,
@@ -320,6 +358,61 @@ async def accept_winners(
         await state.clear()
         return
 
+    tag = f"WINNER#{giveaway_info.week_count}"
+
+    # Получаем предыдущий результат этой недели
+    result = await get_giveaway_result_by_week_number(giveaway_info.week_count)
+
+    # Снимаем тег со СТАРЫХ победителей
+    if result:
+        #
+        # Здесь должны получить tg_id предыдущих победителей.
+        #
+        # Например:
+        #
+        # old_winner_ids = result.winner_ids
+        #
+        # Если сейчас в GiveawayResult у тебя хранится только
+        # winners_text, ниже объяснил, что нужно добавить.
+        #
+
+        old_winner_ids = getattr(
+            result,
+            "winner_ids",
+            [],
+        )
+
+        for user_id in old_winner_ids:
+            # Если человек снова победил,
+            # снимать и заново выдавать тег нет смысла
+            if user_id in winner_ids:
+                continue
+
+            try:
+                await bot.set_chat_member_tag(
+                    chat_id=config.bot.chat_id,
+                    user_id=user_id,
+                    tag="",
+                )
+
+                print(f"Тег снят с предыдущего " f"победителя {user_id}")
+
+            except Exception as e:
+                print(f"Не удалось снять тег с " f"{user_id}: {e}")
+
+    for user_id in winner_ids:
+        try:
+            await bot.set_chat_member_tag(
+                chat_id=config.bot.chat_id,
+                user_id=user_id,
+                tag=tag,
+            )
+
+            print(f"Пользователю {user_id} " f"установлен тег {tag}")
+
+        except Exception as e:
+            print(f"Не удалось установить тег " f"{user_id}: {e}")
+
     text = (
         f"🏆 <b>Победители испытания "
         f"{giveaway_info.week_count} недели банды</b>\n\n"
@@ -333,13 +426,13 @@ async def accept_winners(
             caption=text,
         )
 
-    except Exception:
+    except Exception as e:
+        print(f"Не удалось отправить фото: {e}")
+
         await bot.send_message(
             chat_id=config.bot.chat_id,
             text=text,
         )
-
-    result = await get_giveaway_result_by_week_number(giveaway_info.week_count)
 
     if not result:
         await set_giveaway_result(

@@ -36,7 +36,29 @@ async def get_giveaway_result(bot: Bot):
         )
         return
 
+    winners_data = []
+
     for winner in winners:
+        # Получаем актуальные данные пользователя из Telegram
+        try:
+            member = await bot.get_chat_member(
+                chat_id=config.bot.chat_id,
+                user_id=winner.tg_id,
+            )
+
+            actual_user = member.user
+
+            username = actual_user.username
+            first_name = actual_user.first_name
+
+        except Exception as e:
+            print(f"Не удалось получить актуальные данные " f"{winner.tg_id}: {e}")
+
+            username = winner.username
+            first_name = winner.first_name
+
+        winners_data.append((winner, username, first_name))
+
         try:
             await bot.set_chat_member_tag(
                 chat_id=config.bot.chat_id,
@@ -47,8 +69,12 @@ async def get_giveaway_result(bot: Bot):
             print(f"Не удалось установить тег " f"{winner.tg_id}: {e}")
 
     winners_text = "\n".join(
-        f"{i + 1}. @{user.username or user.first_name} " f"(<code>{user.tg_id}</code>)"
-        for i, user in enumerate(winners)
+        (
+            f"{i + 1}. "
+            f"{'@' + username if username else first_name} "
+            f"(<code>{winner.tg_id}</code>)"
+        )
+        for i, (winner, username, first_name) in enumerate(winners_data)
     )
 
     text = (
