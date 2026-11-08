@@ -30,7 +30,9 @@ async def update_giveaway_file_id(id: int, file_id: str):
 async def update_giveaway_winners_count(id: int, winners_count: int):
     async with async_session() as session:
         await session.execute(
-            update(Giveaway).where(Giveaway.id == id).values(winners_count=winners_count)
+            update(Giveaway)
+            .where(Giveaway.id == id)
+            .values(winners_count=winners_count)
         )
         await session.commit()
 
@@ -38,6 +40,30 @@ async def update_giveaway_winners_count(id: int, winners_count: int):
 async def increment_giveaway_week_count(giveaway_id: int):
     async with async_session() as session:
         await session.execute(
-            update(Giveaway).where(Giveaway.id == giveaway_id).values(week_count=Giveaway.week_count + 1)
+            update(Giveaway)
+            .where(Giveaway.id == giveaway_id)
+            .values(week_count=Giveaway.week_count + 1)
+        )
+        await session.commit()
+
+
+async def update_giveaway_is_notify_enabled(giveaway_id: int, is_notify_enabled: bool):
+    async with async_session() as session:
+        await session.execute(
+            update(Giveaway)
+            .where(Giveaway.id == giveaway_id)
+            .values(is_notify_enabled=is_notify_enabled)
+        )
+        await session.commit()
+
+
+async def update_giveaway_is_results_enabled(
+    giveaway_id: int, is_results_enabled: bool
+):
+    async with async_session() as session:
+        await session.execute(
+            update(Giveaway)
+            .where(Giveaway.id == giveaway_id)
+            .values(is_results_enabled=is_results_enabled)
         )
         await session.commit()

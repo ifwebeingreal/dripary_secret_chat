@@ -62,13 +62,54 @@ close = InlineKeyboardMarkup(
 
 giveaway_panel = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton(text="🔄 Выбрать победителя", callback_data="change_giveaway_winner")],
-        [InlineKeyboardButton(text="📃 Выложить заново", callback_data="send_giveaway_post_more")],
-        [InlineKeyboardButton(text="✏️ Изменить заголовок", callback_data="change_giveaway_title")],
-        [InlineKeyboardButton(text="✏️ Изменить описание", callback_data="change_giveaway_description")],
-        [InlineKeyboardButton(text="✏️ Изменить изображение", callback_data="change_giveaway_file_id")],
-        [InlineKeyboardButton(text="✏️ Изменить кол-во", callback_data="change_giveaway_winners_count")],
-        [InlineKeyboardButton(text="🔙 Назад", callback_data="back")],
+        [
+            InlineKeyboardButton(
+                text="🏆 Выбрать победителя",
+                callback_data="change_giveaway_winner",
+            ),
+            InlineKeyboardButton(
+                text="📃 Выложить заново",
+                callback_data="send_giveaway_post_more",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="🔔 Вкл/выкл автопубликацию",
+                callback_data="toggle_giveaway_notify",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="🏆 Вкл/выкл автоитоги",
+                callback_data="toggle_giveaway_results",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="✏️ Заголовок",
+                callback_data="change_giveaway_title",
+            ),
+            InlineKeyboardButton(
+                text="✏️ Описание",
+                callback_data="change_giveaway_description",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="🖼 Изображение",
+                callback_data="change_giveaway_file_id",
+            ),
+            InlineKeyboardButton(
+                text="👥 Кол-во победителей",
+                callback_data="change_giveaway_winners_count",
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                text="🔙 Назад",
+                callback_data="back",
+            ),
+        ],
     ]
 )
 

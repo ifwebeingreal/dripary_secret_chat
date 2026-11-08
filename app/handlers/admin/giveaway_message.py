@@ -13,6 +13,7 @@ from app.database.requests.giveaway.update import (
     update_giveaway_title,
     update_giveaway_description,
     update_giveaway_winners_count,
+    update_giveaway_is_results_enabled,
 )
 from app.database.requests.giveaway_result.add import set_giveaway_result
 from app.database.requests.giveaway_result.select import (
@@ -48,25 +49,101 @@ def get_next_friday_11():
     return friday_11
 
 
+async def show_giveaway_panel(message: Message):
+    giveaway_info = await get_giveaway(1)
+
+    if giveaway_info is None:
+        await message.answer("❌ Розыгрыш не найден.")
+        return
+
+    friday_time = get_next_friday_11()
+
+    notify_status = "🟢 Включена" if giveaway_info.is_notify_enabled else "🔴 Выключена"
+
+    results_status = (
+        "🟢 Включено" if giveaway_info.is_results_enabled else "🔴 Выключено"
+    )
+
+    await message.answer_photo(
+        photo=giveaway_info.file_id,
+        caption=(
+            "<b>🎁 Панель управления конкурсом</b>\n\n"
+            f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
+            f"<b>Заголовок:</b> {giveaway_info.title}\n"
+            f"<b>Описание:</b> {giveaway_info.description}\n"
+            f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
+            f"<b>Бот подведет итоги:</b> "
+            f"{friday_time.strftime('%d.%m.%Y %H:%M')}\n\n"
+            "<b>⚙️ Автоматизация:</b>\n"
+            f"<b>Публикация розыгрыша:</b> {notify_status}\n"
+            f"<b>Подведение итогов:</b> {results_status}\n\n"
+            "<i>Выберите действие:</i>"
+        ),
+        reply_markup=ikb.giveaway_panel,
+    )
+
+
 @giveaway.callback_query(F.data == "giveaway")
 async def giveaway_data(callback: CallbackQuery):
     await callback.answer()
     await callback.message.delete()
+    await show_giveaway_panel(callback.message)
 
+
+@giveaway.callback_query(F.data == "toggle_giveaway_notify")
+async def toggle_giveaway_notify(callback: CallbackQuery):
     giveaway_info = await get_giveaway(1)
-    friday_time = get_next_friday_11()
 
-    await callback.message.answer_photo(
-        photo=giveaway_info.file_id,
-        caption=f"<b>Панель управления конкурсом</b>\n\n"
-        f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
-        f"<b>Заголовок:</b> {giveaway_info.title}\n"
-        f"<b>Описание:</b> {giveaway_info.description}\n"
-        f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
-        f"<b>Бот подведет итоги:</b> {friday_time.strftime('%d.%m.%Y %H:%M')}\n\n"
-        f"<i>Выберите действие:</i>",
-        reply_markup=ikb.giveaway_panel,
+    if giveaway_info is None:
+        await callback.answer(
+            "❌ Розыгрыш не найден!",
+            show_alert=True,
+        )
+        return
+
+    new_status = not giveaway_info.is_notify_enabled
+
+    await update_giveaway_is_notify_enabled(
+        giveaway_id=1,
+        is_notify_enabled=new_status,
     )
+
+    await callback.answer(
+        "✅ Автопубликация включена!"
+        if new_status
+        else "❌ Автопубликация выключена!"
+    )
+
+    await callback.message.delete()
+    await show_giveaway_panel(callback.message)
+
+
+@giveaway.callback_query(F.data == "toggle_giveaway_results")
+async def toggle_giveaway_results(callback: CallbackQuery):
+    giveaway_info = await get_giveaway(1)
+
+    if giveaway_info is None:
+        await callback.answer(
+            "❌ Розыгрыш не найден!",
+            show_alert=True,
+        )
+        return
+
+    new_status = not giveaway_info.is_results_enabled
+
+    await update_giveaway_is_results_enabled(
+        giveaway_id=1,
+        is_results_enabled=new_status,
+    )
+
+    await callback.answer(
+        "✅ Автоматическое подведение итогов включено!"
+        if new_status
+        else "❌ Автоматическое подведение итогов выключено!"
+    )
+
+    await callback.message.delete()
+    await show_giveaway_panel(callback.message)
 
 
 @giveaway.callback_query(F.data == "change_giveaway_title")
@@ -86,26 +163,13 @@ async def check_new_title(message: Message, state: FSMContext):
     if message.text and len(message.text) <= 100:
         await update_giveaway_title(1, message.text)
 
-        giveaway_info = await get_giveaway(1)
-        friday_time = get_next_friday_11()
-
-        await message.answer_photo(
-            photo=giveaway_info.file_id,
-            caption=f"<b>Панель управления конкурсом</b>\n\n"
-            f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
-            f"<b>Заголовок:</b> {giveaway_info.title}\n"
-            f"<b>Описание:</b> {giveaway_info.description}\n"
-            f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
-            f"<b>Бот подведет итоги:</b> {friday_time.strftime('%d.%m.%Y %H:%M')}\n\n"
-            f"<i>Выберите действие:</i>",
-            reply_markup=ikb.giveaway_panel,
-        )
-
         await state.clear()
+        await show_giveaway_panel(message)
 
     else:
         await message.answer(
-            "Заголовок должен быть до 100 символов!", reply_markup=ikb.admin_cancel
+            "Заголовок должен быть до 100 символов!",
+            reply_markup=ikb.admin_cancel,
         )
 
 
@@ -126,26 +190,13 @@ async def check_new_description(message: Message, state: FSMContext):
     if message.text and len(message.text) <= 1000:
         await update_giveaway_description(1, message.html_text)
 
-        giveaway_info = await get_giveaway(1)
-        friday_time = get_next_friday_11()
-
-        await message.answer_photo(
-            photo=giveaway_info.file_id,
-            caption=f"<b>Панель управления конкурсом</b>\n\n"
-            f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
-            f"<b>Заголовок:</b> {giveaway_info.title}\n"
-            f"<b>Описание:</b> {giveaway_info.description}\n"
-            f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
-            f"<b>Бот подведет итоги:</b> {friday_time.strftime('%d.%m.%Y %H:%M')}\n\n"
-            f"<i>Выберите действие:</i>",
-            reply_markup=ikb.giveaway_panel,
-        )
-
         await state.clear()
+        await show_giveaway_panel(message)
 
     else:
         await message.answer(
-            "Описание должно быть до 1000 символов!", reply_markup=ikb.admin_cancel
+            "Описание должно быть до 1000 символов!",
+            reply_markup=ikb.admin_cancel,
         )
 
 
@@ -165,27 +216,19 @@ async def change_giveaway_file_id(callback: CallbackQuery, state: FSMContext):
 @giveaway.message(EditGiveaway.new_file_id)
 async def check_new_file_id(message: Message, state: FSMContext):
     if message.photo:
-        await update_giveaway_file_id(1, message.photo[-1].file_id)
-
-        giveaway_info = await get_giveaway(1)
-        friday_time = get_next_friday_11()
-
-        await message.answer_photo(
-            photo=giveaway_info.file_id,
-            caption=f"<b>Панель управления конкурсом</b>\n\n"
-            f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
-            f"<b>Заголовок:</b> {giveaway_info.title}\n"
-            f"<b>Описание:</b> {giveaway_info.description}\n"
-            f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
-            f"<b>Бот подведет итоги:</b> {friday_time.strftime('%d.%m.%Y %H:%M')}\n\n"
-            f"<i>Выберите действие:</i>",
-            reply_markup=ikb.giveaway_panel,
+        await update_giveaway_file_id(
+            1,
+            message.photo[-1].file_id,
         )
 
         await state.clear()
+        await show_giveaway_panel(message)
 
     else:
-        await message.answer("Пришлите изображение!", reply_markup=ikb.admin_cancel)
+        await message.answer(
+            "Пришлите изображение!",
+            reply_markup=ikb.admin_cancel,
+        )
 
 
 @giveaway.callback_query(F.data == "change_giveaway_winners_count")
@@ -204,28 +247,18 @@ async def change_giveaway_winners_count(callback: CallbackQuery, state: FSMConte
 @giveaway.message(EditGiveaway.new_winners_count)
 async def check_new_winners_count(message: Message, state: FSMContext):
     if message.text and message.text.isdigit() and int(message.text) > 0:
-        await update_giveaway_winners_count(1, int(message.text))
-
-        giveaway_info = await get_giveaway(1)
-        friday_time = get_next_friday_11()
-
-        await message.answer_photo(
-            photo=giveaway_info.file_id,
-            caption=f"<b>Панель управления конкурсом</b>\n\n"
-            f"<b>Неделя конкурса:</b> {giveaway_info.week_count}\n"
-            f"<b>Заголовок:</b> {giveaway_info.title}\n"
-            f"<b>Описание:</b> {giveaway_info.description}\n"
-            f"<b>Количество победителей:</b> {giveaway_info.winners_count}\n"
-            f"<b>Бот подведет итоги:</b> {friday_time.strftime('%d.%m.%Y %H:%M')}\n\n"
-            f"<i>Выберите действие:</i>",
-            reply_markup=ikb.giveaway_panel,
+        await update_giveaway_winners_count(
+            1,
+            int(message.text),
         )
 
         await state.clear()
+        await show_giveaway_panel(message)
 
     else:
         await message.answer(
-            "Количество должно быть больше нуля!", reply_markup=ikb.admin_cancel
+            "Количество должно быть больше нуля!",
+            reply_markup=ikb.admin_cancel,
         )
 
 

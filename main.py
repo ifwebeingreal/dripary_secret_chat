@@ -93,14 +93,14 @@ async def main():
         minute=0,
         kwargs={'bot': bot}
     )
-    # scheduler.add_job(
-    #     get_giveaway_result,
-    #     trigger='cron',
-    #     day_of_week='sun',
-    #     hour=11,
-    #     minute=0,
-    #     kwargs={'bot': bot}
-    # )
+    scheduler.add_job(
+        get_giveaway_result,
+        trigger='cron',
+        day_of_week='sun',
+        hour=11,
+        minute=0,
+        kwargs={'bot': bot}
+    )
     scheduler.add_job(
         new_giveaway_week,
         trigger='cron',

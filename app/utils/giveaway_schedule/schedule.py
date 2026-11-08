@@ -11,6 +11,9 @@ from app.database.requests.giveaway_result.add import set_giveaway_result
 async def send_notify_about_giveaway(bot: Bot):
     giveaway = await get_giveaway(1)
 
+    if giveaway is None or not giveaway.is_notify_enabled:
+        return
+
     await bot.send_photo(
         chat_id=config.bot.chat_id,
         photo=giveaway.file_id,
@@ -21,7 +24,7 @@ async def send_notify_about_giveaway(bot: Bot):
 async def get_giveaway_result(bot: Bot):
     giveaway = await get_giveaway(1)
 
-    if giveaway is None:
+    if giveaway is None or not giveaway.is_results_enabled:
         return
 
     winners = await get_giveaway_winners(

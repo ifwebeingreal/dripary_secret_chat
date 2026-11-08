@@ -7,8 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_
 
 from config import config
 
-engine = create_async_engine(url=config.database.sqlalchemy_url(),
-                             echo=True)
+engine = create_async_engine(url=config.database.sqlalchemy_url(), echo=True)
 
 async_session = async_sessionmaker(engine)
 
@@ -20,7 +19,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
@@ -33,14 +32,14 @@ class User(Base):
 
 
 class Admin(Base):
-    __tablename__ = 'admins'
+    __tablename__ = "admins"
 
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
 
 
 class Outfit(Base):
-    __tablename__ = 'outfits'
+    __tablename__ = "outfits"
 
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
@@ -51,7 +50,7 @@ class Outfit(Base):
 
 
 class OutfitUser(Base):
-    __tablename__ = 'outfit_users'
+    __tablename__ = "outfit_users"
 
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
@@ -60,14 +59,14 @@ class OutfitUser(Base):
 
 
 class PromoCode(Base):
-    __tablename__ = 'promo_codes'
+    __tablename__ = "promo_codes"
 
     id: Mapped[intpk]
     promo_code: Mapped[str]
 
 
 class Task(Base):
-    __tablename__ = 'tasks'
+    __tablename__ = "tasks"
 
     id: Mapped[intpk]
     title: Mapped[str]
@@ -76,7 +75,7 @@ class Task(Base):
 
 
 class UserTask(Base):
-    __tablename__ = 'user_tasks'
+    __tablename__ = "user_tasks"
 
     id: Mapped[intpk]
     tg_id: Mapped[int] = mapped_column(BigInteger)
@@ -85,18 +84,30 @@ class UserTask(Base):
 
 
 class Giveaway(Base):
-    __tablename__ = 'giveaways'
+    __tablename__ = "giveaways"
 
     id: Mapped[intpk]
     title: Mapped[str]
     description: Mapped[str]
     file_id: Mapped[str]
-    winners_count: Mapped[int] = mapped_column(nullable=True, default=1, server_default="1")
+    winners_count: Mapped[int] = mapped_column(
+        nullable=True, default=1, server_default="1"
+    )
     week_count: Mapped[int] = mapped_column(nullable=True, server_default="0")
+    is_notify_enabled: Mapped[bool] = mapped_column(
+        default=True,
+        server_default="true",
+        nullable=False,
+    )
+    is_results_enabled: Mapped[bool] = mapped_column(
+        default=True,
+        server_default="true",
+        nullable=False,
+    )
 
 
 class GiveawayResult(Base):
-    __tablename__ = 'giveaways_results'
+    __tablename__ = "giveaways_results"
 
     id: Mapped[intpk]
     title: Mapped[str] = mapped_column(String, nullable=True)
