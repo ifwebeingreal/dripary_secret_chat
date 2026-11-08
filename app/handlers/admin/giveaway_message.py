@@ -14,6 +14,7 @@ from app.database.requests.giveaway.update import (
     update_giveaway_description,
     update_giveaway_winners_count,
     update_giveaway_is_results_enabled,
+    update_giveaway_is_notify_enabled,
 )
 from app.database.requests.giveaway_result.add import set_giveaway_result
 from app.database.requests.giveaway_result.select import (
